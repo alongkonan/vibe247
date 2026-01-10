@@ -208,7 +208,6 @@
                 <div class="w-full lg:w-auto flex-shrink-0 flex flex-col items-center">
                     <div id="artwork-wrapper" class="w-full flex justify-center lg:block">
                          <div id="artwork-container" class="flex justify-center">
-                             <!-- Updated Logo -->
                              <img id="artwork-image" src="https://img2.pic.in.th/1000074512.png" alt="Album Art">
                          </div>
                     </div>
@@ -226,18 +225,15 @@
                             </span>
                             <span class="text-xs font-bold tracking-widest text-vibe-red uppercase font-montserrat">LIVE 24/7</span>
                         </div>
-                        <!-- Updated Logo -->
                         <img src="https://img2.pic.in.th/1000074512.png" alt="VIBE 24" class="h-10 lg:h-12 object-contain drop-shadow-md">
                     </div>
 
                     <!-- Song Info -->
                     <div class="w-full space-y-1 lg:space-y-2">
-                        <!-- Artist Name -->
                         <div class="w-full text-center lg:text-left">
                             <p id="track-artist" class="text-xl text-gray-400 font-medium truncate uppercase tracking-wide">VIBE 24</p>
                         </div>
 
-                        <!-- Song Title -->
                         <div class="w-full relative flex items-center justify-center lg:justify-start">
                             <h2 id="track-title" class="text-2xl md:text-3xl font-extrabold text-white text-center lg:text-left leading-tight line-clamp-2 transition-all duration-300 tracking-tight">
                                 MUSIC STATION
@@ -249,8 +245,9 @@
                             <div class="flex items-center gap-2 text-sm text-gray-300 bg-vibe-grey py-1.5 px-4 rounded-md w-full max-w-sm lg:max-w-md border-l-4 border-vibe-red overflow-hidden">
                                 <span class="text-vibe-red font-bold whitespace-nowrap flex-shrink-0 z-10 font-montserrat">NEXT:</span>
                                 <div class="marquee-container w-full h-6 flex items-center">
-                                    <span id="next-song-display" class="marquee-content font-medium" style="animation-duration: 12s;">
-                                        Stay Tuned
+                                    <span class="marquee-content font-medium" style="animation-duration: 12s;">
+                                        <!-- Direct Script Embed for Next Song -->
+                                        <script src="https://embed.radio.co/embed/sbf4f79825/next.js"></script>
                                     </span>
                                 </div>
                             </div>
@@ -302,7 +299,6 @@
                     
                     <!-- Image -->
                     <div class="w-[120px] sm:w-[140px] lg:w-full aspect-[3/4] lg:aspect-[3/4] relative flex-shrink-0 bg-black">
-                        <!-- Updated Default Logo -->
                         <img id="dj-image" src="https://img2.pic.in.th/1000074512.png" alt="DJ Station" class="w-full h-full object-contain transition-transform duration-700 group-hover:scale-105" style="object-position: center; padding: 10px;">
                         
                         <!-- Gradient Overlay (Desktop) -->
@@ -331,7 +327,6 @@
                         
                         <div class="hidden lg:block w-12 h-1 bg-vibe-red mb-3"></div>
                         <div class="hidden lg:flex items-center justify-end w-full">
-                            <!-- Updated Small Logo -->
                             <img src="https://img2.pic.in.th/1000074512.png" class="h-5 w-auto opacity-80 filter grayscale hover:grayscale-0 transition-all">
                         </div>
                     </div>
@@ -356,15 +351,13 @@
                 { day: 6, start: 9, end: 15, name: "DJ KRIT", timeLabel: "SAT 09.00-15.00", image: "https://lh3.googleusercontent.com/d/1c7-F8m-Q51qCx7oRLSa6zYhXsKKVAocA" },
                 { day: 6, start: 15, end: 19, name: "DJ MAN", timeLabel: "SAT 15.00-19.00", image: "https://lh3.googleusercontent.com/d/1ZQLeVFc6S4ARJwLdlcFS-yyPPwQGzV8M" }
             ];
-            // Updated Default DJ Logo
             const defaultDJ = { name: "VIBE 24", timeLabel: "Hits 24 Hours", image: "https://img2.pic.in.th/1000074512.png" };
 
             const urls = {
                 stream: `https://streaming.radio.co/${STATION_ID}/listen`,
                 status: `https://public.radio.co/stations/${STATION_ID}/status`,
-                nextScript: `https://embed.radio.co/embed/${STATION_ID}/next.js`
+                // nextScript is now used directly in HTML, so removed from here to clean up
             };
-            // Updated Default Artwork
             const defaultArtwork = "https://img2.pic.in.th/1000074512.png";
 
             const player = document.getElementById('radio-player');
@@ -375,7 +368,7 @@
             const artworkImage = document.getElementById('artwork-image');
             const trackArtistEl = document.getElementById('track-artist');
             const trackTitleEl = document.getElementById('track-title');
-            const nextSongDisplayEl = document.getElementById('next-song-display');
+            // nextSongDisplayEl removed as we don't manipulate it with JS anymore
             const djImageEl = document.getElementById('dj-image');
             const djNameEl = document.getElementById('dj-name');
             const djTimeEl = document.getElementById('dj-time');
@@ -443,40 +436,6 @@
                 }
             }
 
-            // --- Iframe Scraper for Next Song ---
-            function fetchScriptContent(url, callback) {
-                const oldIframe = document.getElementById('scraper-iframe');
-                if (oldIframe) document.body.removeChild(oldIframe);
-
-                const iframe = document.createElement('iframe');
-                iframe.id = 'scraper-iframe';
-                iframe.style.display = 'none';
-                document.body.appendChild(iframe);
-
-                const scriptSrc = `${url}?t=${Date.now()}`;
-                
-                const timeoutId = setTimeout(() => {
-                    if(document.body.contains(iframe)) document.body.removeChild(iframe);
-                }, 2500);
-
-                const doc = iframe.contentWindow.document;
-                doc.open();
-                doc.write(`<html><body><script src="${scriptSrc}"><\/script></body></html>`);
-                doc.close();
-
-                iframe.onload = function() {
-                    clearTimeout(timeoutId);
-                    try {
-                        const content = iframe.contentWindow.document.body.innerText;
-                        if (content && content.trim() !== "") {
-                            let text = content.trim();
-                            if (text.includes("Loading") || text === "...") text = "VIBE 24";
-                            callback(text);
-                        }
-                    } catch (e) { }
-                };
-            }
-
             // --- Player Logic ---
             player.addEventListener('error', (e) => {
                 console.error("Audio Error", e);
@@ -505,12 +464,7 @@
                     }
                 } catch (e) {}
 
-                fetchScriptContent(urls.nextScript, (content) => {
-                    if (nextSongDisplayEl) nextSongDisplayEl.textContent = content;
-                });
-
                 // Improved Split Logic
-                // Handles "Artist - Title", "Artist-Title", "Artist – Title"
                 const separator = /\s*-\s*|\s*–\s*/;
                 if (separator.test(fullTitle)) {
                     const parts = fullTitle.split(separator);
@@ -518,7 +472,7 @@
                     title = parts.slice(1).join(" - ").trim();
                 } else {
                     title = fullTitle;
-                    // Keep VIBE 24 as artist if none found to show branding
+                    // Keep VIBE 24 as artist if none found
                     artist = "VIBE 24"; 
                 }
 
@@ -588,4 +542,4 @@
         });
     </script>
 </body>
-                                </html>
+</html>
