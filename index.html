@@ -23,9 +23,7 @@
                         }
                     },
                     fontFamily: {
-                        // ตั้งค่า Prompt เป็นฟอนต์หลัก (sans)
                         sans: ['Prompt', 'sans-serif'],
-                        // Montserrat สำหรับหัวข้อภาษาอังกฤษ
                         montserrat: ['Montserrat', 'sans-serif'],
                     }
                 }
@@ -35,7 +33,7 @@
 
     <style>
         body {
-            font-family: 'Prompt', sans-serif; /* บังคับใช้ Prompt ทั้งหน้า */
+            font-family: 'Prompt', sans-serif;
             background-color: #000000;
             color: #FFFFFF;
             overflow-x: hidden;
@@ -232,14 +230,14 @@
 
                     <!-- Song Info -->
                     <div class="w-full space-y-1 lg:space-y-2">
+                        <!-- Artist Name -->
                         <div class="w-full text-center lg:text-left">
-                            <!-- Removed font-montserrat to use default Prompt for potential Thai text -->
-                            <p id="track-artist" class="text-lg text-gray-400 font-medium truncate uppercase">VIBE 24</p>
+                            <p id="track-artist" class="text-xl text-gray-400 font-medium truncate uppercase tracking-wide">VIBE 24</p>
                         </div>
 
+                        <!-- Song Title -->
                         <div class="w-full relative flex items-center justify-center lg:justify-start">
-                            <!-- Removed font-montserrat to use default Prompt for potential Thai text -->
-                            <h2 id="track-title" class="text-2xl md:text-4xl font-bold text-white text-center lg:text-left leading-tight line-clamp-2 transition-all duration-300 tracking-tight">
+                            <h2 id="track-title" class="text-2xl md:text-3xl font-extrabold text-white text-center lg:text-left leading-tight line-clamp-2 transition-all duration-300 tracking-tight">
                                 MUSIC STATION
                             </h2>
                         </div>
@@ -249,7 +247,6 @@
                             <div class="flex items-center gap-2 text-sm text-gray-300 bg-vibe-grey py-1.5 px-4 rounded-md w-full max-w-sm lg:max-w-md border-l-4 border-vibe-red overflow-hidden">
                                 <span class="text-vibe-red font-bold whitespace-nowrap flex-shrink-0 z-10 font-montserrat">NEXT:</span>
                                 <div class="marquee-container w-full h-6 flex items-center">
-                                    <!-- Using Prompt font here -->
                                     <span id="next-song-display" class="marquee-content font-medium" style="animation-duration: 12s;">
                                         Stay Tuned
                                     </span>
@@ -508,13 +505,17 @@
                     if (nextSongDisplayEl) nextSongDisplayEl.textContent = content;
                 });
 
-                if (fullTitle.includes(" - ")) {
-                    const parts = fullTitle.split(" - ");
-                    artist = parts[0];
-                    title = parts.slice(1).join(" - ");
+                // Improved Split Logic
+                // Handles "Artist - Title", "Artist-Title", "Artist – Title"
+                const separator = /\s*-\s*|\s*–\s*/;
+                if (separator.test(fullTitle)) {
+                    const parts = fullTitle.split(separator);
+                    artist = parts[0].trim();
+                    title = parts.slice(1).join(" - ").trim();
                 } else {
                     title = fullTitle;
-                    if (artist === "Star Radio" || artist === "VIBE 24") artist = "NOW PLAYING";
+                    // Keep VIBE 24 as artist if none found to show branding
+                    artist = "VIBE 24"; 
                 }
 
                 if (trackArtistEl) trackArtistEl.textContent = artist;
