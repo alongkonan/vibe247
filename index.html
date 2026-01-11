@@ -4,6 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VIBE 24 - คลื่นเพลงฮิต...ต่อเนื่อง 24 ชั่วโมง</title>
+    
+    <!-- SEO & Social Media Meta Tags -->
+    <meta name="description" content="VIBE 24 - Music Station คลื่นเพลงฮิต...ต่อเนื่อง 24 ชั่วโมง ฟังเพลงออนไลน์คุณภาพเสียงระดับ HD กับดีเจที่คุณชื่นชอบ">
+    <meta name="keywords" content="VIBE 24, วิทยุออนไลน์, ฟังเพลง, เพลงฮิต, Radio Online, Music Station, DJ KRIT, DJ MAN">
+    <meta name="author" content="VIBE 24 Station">
+    
+    <!-- Open Graph / Facebook / Line -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://vibe247.vercel.app/">
+    <meta property="og:title" content="VIBE 24 - Music Station | Hits 24 Hours">
+    <meta property="og:description" content="คลื่นเพลงฮิต...ต่อเนื่อง 24 ชั่วโมง ฟังเพลงออนไลน์คุณภาพเสียงระดับ HD กับดีเจที่คุณชื่นชอบ">
+    <meta property="og:image" content="https://img5.pic.in.th/file/secure-sv1/1000074693.png">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://vibe247.vercel.app/">
+    <meta property="twitter:title" content="VIBE 24 - Music Station | Hits 24 Hours">
+    <meta property="twitter:description" content="คลื่นเพลงฮิต...ต่อเนื่อง 24 ชั่วโมง ฟังเพลงออนไลน์คุณภาพเสียงระดับ HD กับดีเจที่คุณชื่นชอบ">
+    <meta property="twitter:image" content="https://img5.pic.in.th/file/secure-sv1/1000074693.png">
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts: Montserrat & Prompt -->
@@ -78,10 +98,10 @@
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
         }
 
-        /* Artwork Styling - Reduced Size */
+        /* Artwork Styling */
         #artwork-image {
             width: 100%;
-            max-width: 280px; /* Reduced from 350px */
+            max-width: 350px; 
             height: auto;
             aspect-ratio: 1/1;
             object-fit: cover;
@@ -93,17 +113,17 @@
             border: 1px solid #333;
         }
         
-        /* Smart Resize Class - Even Smaller */
+        /* Smart Resize Class */
         .art-shrink {
-            max-width: 200px !important; /* Reduced from 220px */
+            max-width: 220px !important; 
         }
         
         @media (min-width: 1024px) {
             #artwork-image {
-                max-width: 350px; /* Reduced from 450px */
+                max-width: 450px; 
             }
             .art-shrink {
-                max-width: 250px !important; /* Reduced from 320px */
+                max-width: 320px !important; 
             }
         }
         
@@ -643,6 +663,7 @@
                     title = parts.slice(1).join(" - ").trim();
                 } else {
                     title = fullTitle;
+                    // Keep VIBE 24 as artist if none found
                     artist = "VIBE 24"; 
                 }
 
