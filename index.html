@@ -416,14 +416,42 @@
         document.addEventListener('DOMContentLoaded', () => {
             const STATION_ID = "sbf4f79825"; 
             
+            // --- DJ SCHEDULE CONFIGURATION ---
+            // 0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat
             const djSchedule = [
-                // DJ KRIT (Sat & Sun)
-                { day: 6, start: 9, end: 15, name: "DJ KRIT", timeLabel: "SAT, SUN 09.00-15.00", image: "https://lh3.googleusercontent.com/d/1c7-F8m-Q51qCx7oRLSa6zYhXsKKVAocA" },
-                { day: 0, start: 9, end: 15, name: "DJ KRIT", timeLabel: "SAT, SUN 09.00-15.00", image: "https://lh3.googleusercontent.com/d/1c7-F8m-Q51qCx7oRLSa6zYhXsKKVAocA" },
+                // ตัวอย่าง: ดีเจ จันทร์-ศุกร์ (MON-FRI)
+                /*
+                { 
+                    days: [1, 2, 3, 4, 5], // 1-5 คือ จันทร์ถึงศุกร์
+                    start: 18, // เริ่ม 18:00
+                    end: 21,   // จบ 21:00
+                    name: "DJ EXAMPLE", 
+                    timeLabel: "MON-FRI 18.00-21.00", 
+                    image: "URL_รูปภาพ" 
+                },
+                */
+
+                // DJ KRIT (เสาร์-อาทิตย์)
+                { 
+                    days: [0, 6], // 0=อาทิตย์, 6=เสาร์
+                    start: 9, 
+                    end: 15, 
+                    name: "DJ KRIT", 
+                    timeLabel: "SAT-SUN 09.00-15.00", 
+                    image: "https://lh3.googleusercontent.com/d/1c7-F8m-Q51qCx7oRLSa6zYhXsKKVAocA" 
+                },
                 
-                // DJ MAN (Sat)
-                { day: 6, start: 15, end: 19, name: "DJ MAN", timeLabel: "SAT 15.00-19.00", image: "https://lh3.googleusercontent.com/d/1ZQLeVFc6S4ARJwLdlcFS-yyPPwQGzV8M" }
+                // DJ MAN (เสาร์)
+                { 
+                    days: [6], // 6=เสาร์
+                    start: 15, 
+                    end: 19, 
+                    name: "DJ MAN", 
+                    timeLabel: "SAT 15.00-19.00", 
+                    image: "https://lh3.googleusercontent.com/d/1ZQLeVFc6S4ARJwLdlcFS-yyPPwQGzV8M" 
+                }
             ];
+            
             const defaultDJ = { name: "VIBE 24", timeLabel: "Hits 24 Hours", image: "https://img2.pic.in.th/1000074512.png" };
 
             const urls = {
@@ -463,68 +491,7 @@
 
             let isPlaying = false;
 
-            // --- Modal Logic ---
-            function openModal() {
-                requestModal.classList.remove('hidden');
-                // Trigger reflow
-                void requestModal.offsetWidth;
-                requestModal.classList.remove('opacity-0');
-                modalContent.classList.remove('scale-95');
-                modalContent.classList.add('scale-100');
-            }
-
-            function closeModal() {
-                requestModal.classList.add('opacity-0');
-                modalContent.classList.remove('scale-100');
-                modalContent.classList.add('scale-95');
-                setTimeout(() => {
-                    requestModal.classList.add('hidden');
-                }, 300);
-            }
-
-            openRequestBtn.addEventListener('click', openModal);
-            closeModalBtn.addEventListener('click', closeModal);
-            
-            // Close on click outside
-            requestModal.addEventListener('click', (e) => {
-                if (e.target === requestModal) closeModal();
-            });
-
-            // --- Share Functionality ---
-            shareBtn.addEventListener('click', async () => {
-                shareBtn.classList.add('click-pulse');
-                setTimeout(() => shareBtn.classList.remove('click-pulse'), 300);
-
-                const artist = trackArtistEl.textContent.trim();
-                const title = trackTitleEl.textContent.trim();
-                const shareText = `🎵 กำลังฟัง: ${title} - ${artist} ที่ VIBE 24`;
-                const shareUrl = window.location.href;
-
-                if (navigator.share) {
-                    try {
-                        await navigator.share({
-                            title: 'VIBE 24 Music Station',
-                            text: shareText,
-                            url: shareUrl
-                        });
-                        return;
-                    } catch (err) {}
-                } 
-                
-                try {
-                    await navigator.clipboard.writeText(`${shareText} ${shareUrl}`);
-                    iconShare.classList.add('hidden');
-                    iconCopied.classList.remove('hidden');
-                    setTimeout(() => {
-                        iconShare.classList.remove('hidden');
-                        iconCopied.classList.add('hidden');
-                    }, 2000);
-                } catch (err) {
-                    alert('ไม่สามารถคัดลอกลิงก์ได้');
-                }
-            });
-
-            // --- DJ Logic ---
+            // --- DJ Logic (Updated for multiple days) ---
             function updateDJCard() {
                 const now = new Date();
                 const day = now.getDay();
@@ -532,7 +499,8 @@
                 let currentShow = null;
 
                 for (const show of djSchedule) {
-                    if (show.day === day && hour >= show.start && hour < show.end) {
+                    // Check if current day is in the scheduled days array
+                    if (show.days.includes(day) && hour >= show.start && hour < show.end) {
                         currentShow = show;
                         break;
                     }
