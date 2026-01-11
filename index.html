@@ -7,7 +7,7 @@
     
     <!-- SEO & Social Media Meta Tags -->
     <meta name="description" content="VIBE 24 - Music Station คลื่นเพลงฮิต...ต่อเนื่อง 24 ชั่วโมง ฟังเพลงออนไลน์คุณภาพเสียงระดับ HD กับดีเจที่คุณชื่นชอบ">
-    <meta name="keywords" content="VIBE 24, วิทยุออนไลน์, ฟังเพลง, เพลงฮิต, Radio Online, Music Station, DJ KRIT, DJ MAN">
+    <meta name="keywords" content="VIBE 24, วิทยุออนไลน์, ฟังเพลง, เพลงฮิต, Radio Online, Music Station, DJ KRIT">
     <meta name="author" content="VIBE 24 Station">
     
     <!-- Open Graph / Facebook / Line -->
@@ -98,10 +98,10 @@
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
         }
 
-        /* Artwork Styling */
+        /* Artwork Styling - Reduced Size */
         #artwork-image {
             width: 100%;
-            max-width: 350px; 
+            max-width: 250px; /* Reduced from 350px */
             height: auto;
             aspect-ratio: 1/1;
             object-fit: cover;
@@ -113,17 +113,17 @@
             border: 1px solid #333;
         }
         
-        /* Smart Resize Class */
+        /* Smart Resize Class - Even Smaller */
         .art-shrink {
-            max-width: 220px !important; 
+            max-width: 180px !important; /* Reduced from 220px */
         }
         
         @media (min-width: 1024px) {
             #artwork-image {
-                max-width: 450px; 
+                max-width: 300px; /* Reduced from 450px */
             }
             .art-shrink {
-                max-width: 320px !important; 
+                max-width: 220px !important; /* Reduced from 320px */
             }
         }
         
@@ -349,8 +349,8 @@
                     
                     <!-- Image -->
                     <div class="w-[120px] sm:w-[140px] lg:w-full aspect-[3/4] lg:aspect-[3/4] relative flex-shrink-0 bg-black">
-                        <!-- Updated Default Image directly in HTML -->
-                        <img id="dj-image" src="https://img5.pic.in.th/file/secure-sv1/vide-dj.png" alt="DJ Station" class="w-full h-full object-contain transition-transform duration-700 group-hover:scale-105" style="object-position: center; padding: 10px;">
+                        <!-- Updated Default DJ Image -->
+                        <img id="dj-image" src="https://img5.pic.in.th/file/secure-sv1/vide-djb72e78e3ef1fd50e.png" alt="DJ Station" class="w-full h-full object-contain transition-transform duration-700 group-hover:scale-105" style="object-position: center; padding: 10px;">
                         
                         <!-- Gradient Overlay (Desktop) -->
                         <div class="hidden lg:block absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
@@ -428,6 +428,7 @@
                 { day: 0, start: 9, end: 15, name: "DJ KRIT", timeLabel: "SUN 09.00-15.00", image: "https://lh3.googleusercontent.com/d/1c7-F8m-Q51qCx7oRLSa6zYhXsKKVAocA" }
                 // Removed DJ MAN
             ];
+            // Updated Default DJ Image URL
             const defaultDJ = { name: "VIBE 24", timeLabel: "Hits 24 Hours", image: "https://img5.pic.in.th/file/secure-sv1/vide-djb72e78e3ef1fd50e.png" };
 
             const urls = {
@@ -570,7 +571,10 @@
 
                 for (const show of djSchedule) {
                     // Check if current day is in the scheduled days array
-                    if (show.day === day && hour >= show.start && hour < show.end) {
+                    // Check for single day or array of days (fallback for legacy config)
+                    const dayMatch = Array.isArray(show.days) ? show.days.includes(day) : show.day === day;
+                    
+                    if (dayMatch && hour >= show.start && hour < show.end) {
                         currentShow = show;
                         break;
                     }
