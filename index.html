@@ -238,10 +238,10 @@
             backdrop-filter: blur(5px);
         }
         
-        #request-container iframe {
-            width: 100% !important;
-            border: none !important;
-            height: 450px !important;
+        /* Custom styling for embedded scripts */
+        .next-song-script {
+            font-family: 'Prompt', sans-serif !important;
+            color: white !important;
         }
     </style>
 </head>
@@ -306,8 +306,9 @@
                             <div class="flex items-center gap-2 text-sm text-gray-300 bg-vibe-grey py-1.5 px-4 rounded-md w-full max-w-sm lg:max-w-md border-l-4 border-vibe-red overflow-hidden">
                                 <span class="text-vibe-red font-bold whitespace-nowrap flex-shrink-0 z-10 font-montserrat">NEXT:</span>
                                 <div class="marquee-container w-full h-6 flex items-center">
-                                    <span id="next-song-display" class="marquee-content font-medium" style="animation-duration: 12s;">
-                                        Stay Tuned
+                                    <span class="marquee-content font-medium next-song-script" style="animation-duration: 12s;">
+                                        <!-- DIRECT SCRIPT EMBED -->
+                                        <script src="https://embed.radio.co/embed/sbf4f79825/next.js"></script>
                                     </span>
                                 </div>
                             </div>
@@ -429,7 +430,7 @@
                 </button>
             </div>
             
-            <!-- Modal Body (Iframe Container) -->
+            <!-- Modal Body (Script Injection) -->
             <div class="p-0 bg-white rounded-b-xl overflow-hidden relative" id="request-container">
                 <!-- Loader -->
                 <div class="absolute inset-0 flex items-center justify-center bg-gray-100 z-0">
@@ -526,8 +527,6 @@
             const requestModal = document.getElementById('request-modal');
             const modalContent = document.getElementById('modal-content');
             const requestContainer = document.getElementById('request-container');
-            
-            const nextSongDisplayEl = document.getElementById('next-song-display');
 
             let isPlaying = false;
 
@@ -684,47 +683,6 @@
                 }
             });
 
-            // --- NEW: Iframe Scraper for Next Song (Guaranteed to work with document.write scripts) ---
-            function fetchNextSong() {
-                // Remove old iframe
-                const oldIframe = document.getElementById('scraper-iframe');
-                if (oldIframe) document.body.removeChild(oldIframe);
-
-                // Create hidden iframe
-                const iframe = document.createElement('iframe');
-                iframe.id = 'scraper-iframe';
-                iframe.style.display = 'none';
-                document.body.appendChild(iframe);
-
-                // Add cache buster to URL
-                const scriptSrc = `${urls.nextScript}?t=${Date.now()}`;
-
-                const doc = iframe.contentWindow.document;
-                doc.open();
-                // Write script into iframe
-                doc.write(`<html><body><script src="${scriptSrc}"><\/script></body></html>`);
-                doc.close();
-
-                iframe.onload = function() {
-                    try {
-                        const content = iframe.contentWindow.document.body.innerText;
-                        if (content && content.trim() !== "") {
-                            let text = content.trim();
-                            // Filters
-                            if (text.includes("Loading") || text === "..." || /^<[\.\s]*>$/.test(text) || (text.includes("<") && text.includes(">"))) {
-                                text = "VIBE 24";
-                            }
-                            if (nextSongDisplayEl) nextSongDisplayEl.textContent = text;
-                        }
-                    } catch (e) { console.error("Scrape failed", e); }
-                    
-                    // Cleanup
-                    setTimeout(() => {
-                        if (document.body.contains(iframe)) document.body.removeChild(iframe);
-                    }, 100);
-                };
-            }
-
             async function updateTrackData() {
                 let artworkUrl = defaultArtwork;
                 let fullTitle = "VIBE 24 - Music Station";
@@ -741,9 +699,6 @@
                         else if (track.artwork_url && track.artwork_url !== 'null') artworkUrl = track.artwork_url;
                     }
                 } catch (e) {}
-
-                // Trigger Next Song Update (Synchronous with current)
-                fetchNextSong();
 
                 // Improved Split Logic
                 const separator = /\s*-\s*|\s*–\s*/;
