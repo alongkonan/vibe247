@@ -123,6 +123,7 @@
             border: 1px solid #333;
         }
         
+        /* Smart Resize Class */
         .art-shrink {
             max-width: 180px !important; 
         }
@@ -304,11 +305,9 @@
                         <div class="flex items-center justify-center lg:justify-start w-full pt-2">
                             <div class="flex items-center gap-2 text-sm text-gray-300 bg-vibe-grey py-1.5 px-4 rounded-md w-full max-w-sm lg:max-w-md border-l-4 border-vibe-red overflow-hidden">
                                 <span class="text-vibe-red font-bold whitespace-nowrap flex-shrink-0 z-10 font-montserrat">NEXT:</span>
-                                <div class="marquee-container w-full h-6 flex items-center">
-                                    <span id="next-song-display" class="marquee-content font-medium" style="animation-duration: 12s;">
-                                        <!-- Placeholder text, JS will update -->
-                                        Stay Tuned
-                                    </span>
+                                <!-- Using an empty div for iframe injection -->
+                                <div id="next-song-iframe-container" class="w-full h-6 flex items-center overflow-hidden">
+                                    <span class="text-gray-500 italic text-xs">Loading...</span>
                                 </div>
                             </div>
                         </div>
@@ -527,13 +526,12 @@
             const modalContent = document.getElementById('modal-content');
             const requestContainer = document.getElementById('request-container');
             
-            const nextSongDisplayEl = document.getElementById('next-song-display');
+            const nextSongContainer = document.getElementById('next-song-iframe-container');
 
             let isPlaying = false;
 
             // --- Modal Logic with Script Injection ---
             function loadRequestScript() {
-                // Prevent duplicate injection
                 if (requestContainer.querySelector('iframe')) return;
 
                 const iframe = document.createElement('iframe');
@@ -541,13 +539,12 @@
                 iframe.style.height = "600px";
                 iframe.style.border = "none";
                 iframe.style.position = "relative";
-                iframe.style.zIndex = "10"; // Above loader
+                iframe.style.zIndex = "10";
                 
                 requestContainer.appendChild(iframe);
 
                 const doc = iframe.contentWindow.document;
                 doc.open();
-                // Inject the script into a clean iframe document
                 doc.write(`
                     <!DOCTYPE html>
                     <html>
@@ -566,13 +563,10 @@
 
             function openModal() {
                 requestModal.classList.remove('hidden');
-                // Trigger reflow
                 void requestModal.offsetWidth;
                 requestModal.classList.remove('opacity-0');
                 modalContent.classList.remove('scale-95');
                 modalContent.classList.add('scale-100');
-                
-                // Load script when opening to ensure freshness
                 loadRequestScript();
             }
 
@@ -587,8 +581,6 @@
 
             if(openRequestBtn) openRequestBtn.addEventListener('click', openModal);
             if(closeModalBtn) closeModalBtn.addEventListener('click', closeModal);
-            
-            // Close on click outside
             requestModal.addEventListener('click', (e) => {
                 if (e.target === requestModal) closeModal();
             });
@@ -635,9 +627,7 @@
                 let currentShow = null;
 
                 for (const show of djSchedule) {
-                    // Check if current day is in the scheduled days array
                     const dayMatch = Array.isArray(show.days) ? show.days.includes(day) : show.day === day;
-                    
                     if (dayMatch && hour >= show.start && hour < show.end) {
                         currentShow = show;
                         break;
@@ -656,7 +646,6 @@
                     isLive = true;
                 }
 
-                // Check both name AND image to force update
                 if (djNameEl.textContent !== newName || djImageEl.src !== newImage) {
                     djNameEl.textContent = newName;
                     djTimeEl.textContent = newTime;
@@ -687,40 +676,50 @@
                 }
             });
 
-            // --- Updated Next Song Fetcher (Iframe Method) ---
-            // This ensures next song updates consistently with current song
-            function fetchNextSong() {
+            // --- Iframe Next Song Injection ---
+            function updateNextSongIframe() {
+                // Clear existing content
+                nextSongContainer.innerHTML = '';
+                
                 const iframe = document.createElement('iframe');
-                iframe.style.display = 'none';
-                document.body.appendChild(iframe);
+                iframe.style.width = "100%";
+                iframe.style.height = "100%";
+                iframe.style.border = "none";
+                iframe.style.overflow = "hidden";
                 
-                const scriptSrc = `${urls.nextScript}?t=${Date.now()}`;
+                nextSongContainer.appendChild(iframe);
                 
-                // Set timeout to remove iframe if too slow
-                const timeoutId = setTimeout(() => {
-                    if (document.body.contains(iframe)) document.body.removeChild(iframe);
-                }, 4000);
-
                 const doc = iframe.contentWindow.document;
                 doc.open();
-                doc.write(`<html><body><script src="${scriptSrc}"><\/script></body></html>`);
-                doc.close();
-
-                iframe.onload = function() {
-                    clearTimeout(timeoutId);
-                    try {
-                        const content = iframe.contentWindow.document.body.innerText;
-                        if (content && content.trim() !== "") {
-                            let text = content.trim();
-                            // Filter "Loading..." and patterns like <.....>
-                            if (text.includes("Loading") || text === "..." || /^<[\.\s]*>$/.test(text) || (text.includes("<") && text.includes(">"))) {
-                                text = "VIBE 24";
+                doc.write(`
+                    <!DOCTYPE html>
+                    <html lang="th">
+                    <head>
+                        <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500&display=swap" rel="stylesheet">
+                        <style>
+                            body {
+                                margin: 0;
+                                padding: 0;
+                                background-color: transparent;
+                                color: #d1d5db; /* gray-300 */
+                                font-family: 'Prompt', sans-serif;
+                                font-size: 14px;
+                                font-weight: 500;
+                                white-space: nowrap;
+                                overflow: hidden;
+                                text-overflow: ellipsis;
+                                display: flex;
+                                align-items: center;
+                                height: 24px;
                             }
-                            if (nextSongDisplayEl) nextSongDisplayEl.textContent = text;
-                        }
-                    } catch (e) { console.error(e); }
-                    if (document.body.contains(iframe)) document.body.removeChild(iframe);
-                };
+                        </style>
+                    </head>
+                    <body>
+                        <script src="${urls.nextScript}?t=${Date.now()}"><\/script>
+                    </body>
+                    </html>
+                `);
+                doc.close();
             }
 
             async function updateTrackData() {
@@ -740,16 +739,9 @@
                     }
                 } catch (e) {}
 
-                // Trigger next song update synchronously with current song
-                fetchNextSong();
+                // Trigger Next Song Update
+                updateNextSongIframe();
 
-                // Check for patterns like <....> in title
-                if (/^<[\.\s]*>$/.test(fullTitle) || (fullTitle.includes("<") && fullTitle.includes(">"))) {
-                    fullTitle = "VIBE 24 - Music Station";
-                }
-
-                // Improved Split Logic
-                // Handles "Artist - Title", "Artist-Title", "Artist – Title"
                 const separator = /\s*-\s*|\s*–\s*/;
                 if (separator.test(fullTitle)) {
                     const parts = fullTitle.split(separator);
@@ -757,7 +749,6 @@
                     title = parts.slice(1).join(" - ").trim();
                 } else {
                     title = fullTitle;
-                    // Keep VIBE 24 as artist if none found
                     artist = "VIBE 24"; 
                 }
 
