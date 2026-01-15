@@ -238,10 +238,10 @@
             backdrop-filter: blur(5px);
         }
         
-        /* Custom styling for embedded scripts */
-        .next-song-script {
-            font-family: 'Prompt', sans-serif !important;
-            color: white !important;
+        #request-container iframe {
+            width: 100% !important;
+            border: none !important;
+            height: 450px !important;
         }
     </style>
 </head>
@@ -306,11 +306,8 @@
                             <div class="flex items-center gap-2 text-sm text-gray-300 bg-vibe-grey py-1.5 px-4 rounded-md w-full max-w-sm lg:max-w-md border-l-4 border-vibe-red overflow-hidden">
                                 <span class="text-vibe-red font-bold whitespace-nowrap flex-shrink-0 z-10 font-montserrat">NEXT:</span>
                                 <div class="marquee-container w-full h-6 flex items-center">
-                                    <span class="marquee-content font-medium next-song-script" style="animation-duration: 12s;">
-                                        <!-- DIRECT SCRIPT EMBED -->
-                                        <div id="next-song-display" style="display:inline;">
-                                            <script src="https://embed.radio.co/embed/sbf4f79825/next.js"></script>
-                                        </div>
+                                    <span id="next-song-display" class="marquee-content font-medium" style="animation-duration: 12s;">
+                                        Stay Tuned
                                     </span>
                                 </div>
                             </div>
@@ -432,7 +429,7 @@
                 </button>
             </div>
             
-            <!-- Modal Body (Script Injection) -->
+            <!-- Modal Body (Iframe Container) -->
             <div class="p-0 bg-white rounded-b-xl overflow-hidden relative" id="request-container">
                 <!-- Loader -->
                 <div class="absolute inset-0 flex items-center justify-center bg-gray-100 z-0">
@@ -503,7 +500,7 @@
             const urls = {
                 stream: `https://streaming.radio.co/${STATION_ID}/listen`,
                 status: `https://public.radio.co/stations/${STATION_ID}/status`,
-                // nextScript is still used but injected directly in HTML
+                nextScript: `https://embed.radio.co/embed/${STATION_ID}/next.js`
             };
             const defaultArtwork = "https://img2.pic.in.th/1000074512.png";
 
@@ -529,6 +526,8 @@
             const requestModal = document.getElementById('request-modal');
             const modalContent = document.getElementById('modal-content');
             const requestContainer = document.getElementById('request-container');
+            
+            const nextSongDisplayEl = document.getElementById('next-song-display');
 
             let isPlaying = false;
 
@@ -685,6 +684,43 @@
                 }
             });
 
+            // --- UPDATED: Next Song via Hidden Iframe (The most reliable way for document.write scripts) ---
+            function updateNextSong() {
+                const hiddenFrameId = 'hidden-next-song-frame';
+                let iframe = document.getElementById(hiddenFrameId);
+                
+                if (iframe) document.body.removeChild(iframe);
+                
+                iframe = document.createElement('iframe');
+                iframe.id = hiddenFrameId;
+                iframe.style.display = 'none';
+                document.body.appendChild(iframe);
+                
+                const scriptUrl = `${urls.nextScript}?t=${Date.now()}`;
+                const doc = iframe.contentWindow.document;
+                
+                doc.open();
+                doc.write(`<html><body><script src="${scriptUrl}"><\/script></body></html>`);
+                doc.close();
+                
+                iframe.onload = function() {
+                    try {
+                        let text = iframe.contentWindow.document.body.innerText.trim();
+                        // Filter logic for dots
+                        if (text.includes("...") && text.length < 15) {
+                             // Ignore short ... placeholders
+                        } else if (text.match(/^<[\.\s]+>$/)) {
+                             // Ignore <..........> patterns
+                             if (nextSongDisplayEl.innerText !== "VIBE 24") nextSongDisplayEl.innerText = "VIBE 24";
+                        } else if (text.length > 0) {
+                             if (nextSongDisplayEl.innerText !== text) nextSongDisplayEl.innerText = text;
+                        }
+                    } catch(e) {}
+                    // Clean up iframe after reading
+                    setTimeout(() => { if(document.body.contains(iframe)) document.body.removeChild(iframe); }, 1000);
+                };
+            }
+
             async function updateTrackData() {
                 let artworkUrl = defaultArtwork;
                 let fullTitle = "VIBE 24 - Music Station";
@@ -702,10 +738,12 @@
                     }
                 } catch (e) {}
 
-                // --- FILTER LOGIC (NEW) ---
-                // Check if title contains specific placeholder pattern <....>
-                if (/^<[\.\s]*>$/.test(fullTitle) || fullTitle.includes("<...........>") || (fullTitle.includes("<") && fullTitle.includes(">"))) {
-                    fullTitle = "VIBE 24";
+                // Trigger Next Song Update
+                updateNextSong();
+
+                // Check for patterns like <....> in title
+                if (/^<[\.\s]*>$/.test(fullTitle) || (fullTitle.includes("<") && fullTitle.includes(">"))) {
+                    fullTitle = "VIBE 24 - Music Station";
                 }
 
                 // Improved Split Logic
@@ -739,26 +777,6 @@
                     });
                 }
             }
-
-            // Periodically clean up next song text if it shows the placeholder
-            setInterval(() => {
-                const nextEl = document.getElementById('next-song-display');
-                if (nextEl) {
-                    let text = nextEl.innerText.trim();
-                    if (/^<[\.\s]*>$/.test(text) || text.includes("<...........>") || (text.includes("<") && text.includes(">"))) {
-                        // We can't write to it if it's the script tag itself, but we can wrap it or try to modify the parent content
-                        // Actually, next-song-display is the SPAN container. We can change its textContent, BUT that kills the script.
-                        // So we can only HIDE it or replace it if it's garbage.
-                        // If we replace it, it won't update anymore. 
-                        // So better to just hide/mask visually or replace textContent.
-                        // Replacing textContent kills the script, so it won't update on refresh? No, refresh reloads page.
-                        // But users want dynamic updates without refresh.
-                        // The static script doesn't update without refresh anyway. 
-                        // So masking it is fine.
-                        nextEl.innerText = "VIBE 24";
-                    }
-                }
-            }, 1000);
 
             function togglePlay() {
                 if (isPlaying) {
