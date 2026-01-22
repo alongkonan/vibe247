@@ -223,27 +223,29 @@
             window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; installBtn.classList.remove('hidden'); });
             installBtn.addEventListener('click', async () => { if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt = null; installBtn.classList.add('hidden'); } });
 
-            // --- NEXT SONG SCRAPER ---
-            function fetchNextSong() {
-                const hiddenFrameId = 'hidden-next-song-frame';
-                let iframe = document.getElementById(hiddenFrameId);
-                if (iframe) document.body.removeChild(iframe);
-                iframe = document.createElement('iframe');
-                iframe.id = hiddenFrameId; iframe.style.display = 'none';
-                document.body.appendChild(iframe);
-                
-                const scriptUrl = `${urls.nextScript}?t=${Date.now()}`;
-                const doc = iframe.contentWindow.document;
-                doc.open(); doc.write(`<html><body><script src="${scriptUrl}"><\/script></body></html>`); doc.close();
-                
-                iframe.onload = function() {
-                    try {
-                        const text = iframe.contentWindow.document.body.innerText.trim();
-                        // No filter applied as requested
-                        if (text.length > 0 && nextSongDisplayEl.textContent !== text) nextSongDisplayEl.textContent = text;
-                    } catch(e) {}
-                    setTimeout(() => { if(document.body.contains(iframe)) document.body.removeChild(iframe); }, 100);
-                };
+            // --- NEXT SONG SCRAPER (UPDATED: FETCH METHOD) ---
+            async function fetchNextSong() {
+                try {
+                    // ใช้ Fetch API เพื่อโหลดไฟล์ JS โดยตรง (เร็วกว่าและเสถียรกว่า iframe)
+                    const res = await fetch(`${urls.nextScript}?t=${Date.now()}`);
+                    const text = await res.text();
+                    
+                    // ไฟล์จะ return มาในรูปแบบ document.write('ชื่อเพลง'); เราใช้ Regex ดึงเฉพาะชื่อเพลง
+                    const match = text.match(/document\.write\(['"](.*?)['"]\)/);
+                    if (match && match[1]) {
+                        // สร้าง dummy element เพื่อ decode html entities (เช่น &amp; -> &)
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(match[1], 'text/html');
+                        const nextSong = doc.body.textContent || "";
+
+                        if (nextSong.trim().length > 0 && nextSongDisplayEl.textContent !== nextSong) {
+                            nextSongDisplayEl.textContent = nextSong;
+                        }
+                    }
+                } catch (e) {
+                    // หากเกิด error (เช่น server ปิดกั้น) ให้ console.warn ไว้ แต่ไม่กระทบการทำงานส่วนอื่น
+                    console.warn("Could not fetch next song:", e);
+                }
             }
 
             async function updateTrackData() {
@@ -263,7 +265,7 @@
                     }
                 } catch (e) {}
 
-                // Next Song
+                // เรียกฟังก์ชันดึงเพลงถัดไป
                 fetchNextSong();
 
                 // Current Song Format
