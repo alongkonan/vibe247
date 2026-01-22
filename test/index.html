@@ -4,138 +4,64 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VIBE 24 - คลื่นเพลงฮิต...ต่อเนื่อง 24 ชั่วโมง</title>
-    
-    <!-- Google Fonts: Prompt & Montserrat as per CI -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Prompt:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <!-- CI Configuration -->
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        vibeRed: '#E31E24',
-                        vibeBlack: '#000000',
-                        vibeDark: '#121212',
-                        vibeGrey: '#333333',
-                    },
-                    fontFamily: {
-                        sans: ['Prompt', 'sans-serif'],
-                        montserrat: ['Montserrat', 'sans-serif'],
-                    },
-                    animation: {
-                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'bounce-short': 'bounce 0.5s infinite',
-                    }
-                }
-            }
-        }
-    </script>
-
     <style>
-        /* Custom Styles for Radio Embeds to fit the theme */
         body {
-            background-color: #050505;
+            font-family: 'Prompt', sans-serif;
+            background-color: #000000;
             color: #ffffff;
             overflow-x: hidden;
         }
 
+        /* CI Colors */
+        .text-vibe-red { color: #E31E24; }
+        .bg-vibe-red { background-color: #E31E24; }
+        .border-vibe-red { border-color: #E31E24; }
+        .hover-text-vibe-red:hover { color: #E31E24; }
+        
+        /* Custom Animations */
+        @keyframes pulse-red {
+            0% { box-shadow: 0 0 0 0 rgba(227, 30, 36, 0.7); }
+            70% { box-shadow: 0 0 0 20px rgba(227, 30, 36, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(227, 30, 36, 0); }
+        }
+
+        @keyframes sound-wave {
+            0% { height: 10px; }
+            50% { height: 100%; }
+            100% { height: 10px; }
+        }
+
+        .pulse-btn {
+            animation: pulse-red 2s infinite;
+        }
+
+        .equalizer-bar {
+            width: 6px;
+            background: #E31E24;
+            margin: 0 2px;
+            border-radius: 99px;
+            animation: sound-wave 1s ease-in-out infinite;
+        }
+        
         .glass-panel {
-            background: rgba(20, 20, 20, 0.7);
+            background: rgba(30, 30, 30, 0.6);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        /* Override potential styles from injected scripts */
-        .radio-artwork img {
-            width: 100%;
-            height: auto;
-            border-radius: 1rem;
-            box-shadow: 0 10px 30px -5px rgba(227, 30, 36, 0.3);
-            transition: transform 0.3s ease;
-        }
-        
-        .radio-artwork img:hover {
-            transform: scale(1.02);
-        }
-
-        /* Equalizer Animation */
-        .equalizer {
-            display: flex;
-            align-items: flex-end;
-            height: 24px;
-            gap: 3px;
-        }
-        
-        .bar {
-            width: 4px;
-            background-color: #E31E24;
-            animation: equalize 1s infinite;
-        }
-        
-        .bar:nth-child(1) { animation-duration: 0.8s; height: 40%; }
-        .bar:nth-child(2) { animation-duration: 1.1s; height: 70%; }
-        .bar:nth-child(3) { animation-duration: 0.9s; height: 100%; }
-        .bar:nth-child(4) { animation-duration: 1.2s; height: 60%; }
-        .bar:nth-child(5) { animation-duration: 0.7s; height: 80%; }
-
-        @keyframes equalize {
-            0% { height: 20%; }
-            50% { height: 100%; }
-            100% { height: 20%; }
-        }
-
-        .playing .bar {
-            animation-play-state: running;
-        }
-        
-        .paused .bar {
-            animation-play-state: paused;
-            height: 20%;
-            transition: height 0.3s ease;
-        }
-
-        /* Custom Range Slider */
-        input[type=range] {
-            -webkit-appearance: none;
-            width: 100%;
-            background: transparent;
-        }
-        
-        input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            height: 16px;
-            width: 16px;
-            border-radius: 50%;
-            background: #E31E24;
-            cursor: pointer;
-            margin-top: -6px;
-            box-shadow: 0 0 10px rgba(227, 30, 36, 0.5);
-        }
-        
-        input[type=range]::-webkit-slider-runnable-track {
-            width: 100%;
-            height: 4px;
-            cursor: pointer;
-            background: #333333;
-            border-radius: 2px;
-        }
-
-        /* Hide Scrollbar for clean look */
+        /* Custom Scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
         }
         ::-webkit-scrollbar-track {
-            background: #000000;
+            background: #111;
         }
         ::-webkit-scrollbar-thumb {
             background: #333;
@@ -144,276 +70,318 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #E31E24;
         }
-
-        /* Fix for Request Script Container */
-        .request-container iframe {
-            max-width: 100%;
-            border: none;
+        
+        .cd-spin {
+            animation: spin 10s linear infinite;
         }
+        .cd-paused {
+            animation-play-state: paused;
+        }
+        @keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
+
     </style>
 </head>
-<body class="antialiased min-h-screen flex flex-col font-sans">
+<body class="flex flex-col min-h-screen bg-[url('https://images.unsplash.com/photo-1516280440614-6697288d5d38?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center bg-no-repeat bg-fixed">
+    
+    <!-- Dark Overlay -->
+    <div class="fixed inset-0 bg-black/80 z-0"></div>
 
-    <!-- Navigation -->
-    <nav class="fixed w-full z-50 glass-panel border-b border-white/5">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-20">
-                <div class="flex items-center gap-3">
-                    <img src="https://img2.pic.in.th/1000074512.png" alt="VIBE 24 Logo" class="h-10 w-auto object-contain drop-shadow-[0_0_10px_rgba(227,30,36,0.5)]">
-                    <div class="hidden md:block">
-                        <span class="block text-white font-montserrat font-black text-xl tracking-tighter leading-none">VIBE<span class="text-vibeRed">24</span></span>
-                        <span class="block text-gray-400 text-xs tracking-wide">คลื่นเพลงฮิต...ต่อเนื่อง 24 ชั่วโมง</span>
-                    </div>
-                </div>
-                <div class="hidden md:block">
-                    <div class="ml-10 flex items-baseline space-x-8">
-                        <a href="#home" class="text-white hover:text-vibeRed px-3 py-2 rounded-md text-sm font-medium transition-colors">หน้าหลัก</a>
-                        <a href="#player" class="text-white hover:text-vibeRed px-3 py-2 rounded-md text-sm font-medium transition-colors">ฟังสด</a>
-                        <a href="#requests" class="text-white hover:text-vibeRed px-3 py-2 rounded-md text-sm font-medium transition-colors">ขอเพลง</a>
-                    </div>
-                </div>
-                <div class="flex items-center gap-2">
-                    <div class="h-2 w-2 rounded-full bg-vibeRed animate-pulse"></div>
-                    <span class="text-vibeRed text-xs font-bold uppercase tracking-widest">Live Now</span>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Hero / Player Section -->
-    <section id="home" class="relative pt-32 pb-20 lg:pt-40 lg:pb-32 flex-grow flex items-center justify-center overflow-hidden">
-        <!-- Background Elements -->
-        <div class="absolute top-0 left-0 w-full h-full z-0 overflow-hidden opacity-20 pointer-events-none">
-            <div class="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-vibeRed blur-[150px]"></div>
-            <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-blue-900 blur-[150px]"></div>
-        </div>
-
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-                
-                <!-- Left: Artwork & Metadata -->
-                <div class="lg:col-span-5 flex flex-col items-center lg:items-end order-2 lg:order-1 text-center lg:text-right">
-                    <div class="mb-6 relative group w-64 h-64 sm:w-80 sm:h-80 mx-auto lg:mx-0">
-                        <!-- Artwork Script Wrapper -->
-                        <div class="radio-artwork w-full h-full object-cover rounded-2xl overflow-hidden shadow-2xl shadow-vibeRed/20 border border-white/10 bg-zinc-900 flex items-center justify-center">
-                             <!-- Fallback image if script fails or is slow -->
-                             <div class="absolute inset-0 flex items-center justify-center text-gray-700 bg-zinc-900 -z-10">
-                                <i class="fas fa-music text-6xl opacity-50"></i>
-                             </div>
-                             <!-- Injecting User Script -->
-                             <script src="https://embed.radio.co/embed/sbf4f79825/artwork.js"></script>
-                        </div>
-                        
-                        <!-- Floating badge -->
-                        <div class="absolute -bottom-4 -right-4 bg-white text-vibeBlack px-4 py-2 rounded-full font-bold text-sm shadow-lg flex items-center gap-2">
-                            <i class="fas fa-headphones-alt text-vibeRed"></i>
-                            VIBE 24
-                        </div>
-                    </div>
-
-                    <div class="space-y-2 mt-4 w-full">
-                        <div class="text-vibeRed font-bold text-sm tracking-widest uppercase mb-1">NOW PLAYING</div>
-                        <h2 class="text-2xl sm:text-3xl font-bold text-white leading-tight font-montserrat min-h-[3rem]">
-                            <!-- Song Title Script -->
-                            <script src="https://embed.radio.co/embed/sbf4f79825/song.js"></script>
-                        </h2>
-                        
-                        <div class="flex items-center justify-center lg:justify-end gap-2 text-gray-400 text-sm mt-4 p-3 rounded-lg bg-white/5 border border-white/5 backdrop-blur-sm">
-                            <span class="uppercase text-xs font-semibold tracking-wide text-gray-500">Up Next:</span>
-                            <span class="text-white">
-                                <!-- Next Song Script -->
-                                <script src="https://embed.radio.co/embed/sbf4f79825/next.js"></script>
-                            </span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Center: Controls -->
-                <div class="lg:col-span-7 order-1 lg:order-2">
-                    <div class="glass-panel p-8 sm:p-12 rounded-3xl border border-white/10 shadow-2xl relative overflow-hidden">
-                        <!-- Decorative bg -->
-                        <div class="absolute top-0 right-0 p-4 opacity-10">
-                            <span class="font-montserrat font-black text-9xl text-white">24</span>
-                        </div>
-
-                        <div class="relative z-10">
-                            <div class="flex items-center gap-4 mb-8">
-                                <div class="w-12 h-12 rounded-full bg-vibeRed flex items-center justify-center text-white">
-                                    <i class="fas fa-wave-square"></i>
-                                </div>
-                                <div>
-                                    <h3 class="text-xl font-bold text-white font-montserrat">LIVE STREAM</h3>
-                                    <p class="text-gray-400 text-sm">Online Radio Station</p>
-                                </div>
-                                <div class="ml-auto equalizer paused" id="visualizer">
-                                    <div class="bar"></div>
-                                    <div class="bar"></div>
-                                    <div class="bar"></div>
-                                    <div class="bar"></div>
-                                    <div class="bar"></div>
-                                </div>
-                            </div>
-
-                            <!-- Audio Element (Hidden) -->
-                            <audio id="radio-player" preload="none">
-                                <source src="https://streaming.radio.co/sbf4f79825/listen" type="audio/mpeg">
-                                Your browser does not support the audio element.
-                            </audio>
-
-                            <div class="flex flex-col sm:flex-row items-center gap-8">
-                                <!-- Play Button -->
-                                <button id="play-btn" class="group relative w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-white flex items-center justify-center transition-all duration-300 hover:scale-105 hover:shadow-[0_0_40px_rgba(255,255,255,0.4)] focus:outline-none">
-                                    <div class="absolute inset-0 rounded-full border-4 border-vibeRed opacity-20 scale-110 group-hover:scale-125 transition-transform duration-700"></div>
-                                    <div class="absolute inset-0 rounded-full border-2 border-vibeRed opacity-40 scale-125 group-hover:scale-110 transition-transform duration-1000"></div>
-                                    
-                                    <i id="play-icon" class="fas fa-play text-4xl sm:text-5xl text-vibeRed ml-2 transition-all"></i>
-                                    <i id="pause-icon" class="fas fa-pause text-4xl sm:text-5xl text-vibeRed hidden transition-all"></i>
-                                </button>
-
-                                <!-- Volume & Status -->
-                                <div class="flex-1 w-full space-y-6">
-                                    <div class="flex items-center justify-between text-sm font-medium">
-                                        <span id="status-text" class="text-gray-400">Press Play to Start</span>
-                                        <span class="text-vibeRed font-bold animate-pulse">● LIVE</span>
-                                    </div>
-                                    
-                                    <!-- Volume Control -->
-                                    <div class="space-y-2">
-                                        <div class="flex items-center justify-between text-xs text-gray-500">
-                                            <i class="fas fa-volume-down"></i>
-                                            <i class="fas fa-volume-up"></i>
-                                        </div>
-                                        <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.8">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </section>
-
-    <!-- Request Section -->
-    <section id="requests" class="py-20 bg-zinc-900 border-t border-white/5 relative">
-        <div class="max-w-5xl mx-auto px-4">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl font-bold text-white mb-2 font-montserrat">TRACK <span class="text-vibeRed">REQUESTS</span></h2>
-                <div class="h-1 w-20 bg-vibeRed mx-auto"></div>
-                <p class="mt-4 text-gray-400">อยากฟังเพลงอะไร? ขอเพลงเข้ามาได้เลยที่นี่</p>
-            </div>
-
-            <!-- Request Script Container -->
-            <div class="glass-panel p-4 rounded-xl overflow-hidden flex justify-center">
-                <!-- Using a div to center the script output which might be an iframe -->
-                <div class="w-full overflow-x-auto flex justify-center bg-white rounded-lg">
-                   <div style="min-width: 300px; min-height: 500px;">
-                        <script src="https://embed.radio.co/request/w75f0bc0.js"></script>
-                   </div>
-                </div>
-            </div>
-            
-            <p class="text-center text-xs text-gray-600 mt-4">*ระบบขอเพลงอาจใช้เวลาสักครู่ในการโหลด</p>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="bg-black py-12 border-t border-white/10">
-        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-6">
+    <!-- Main Content -->
+    <div class="relative z-10 flex flex-col min-h-screen">
+        
+        <!-- Header -->
+        <header class="w-full p-6 flex justify-between items-center glass-panel sticky top-0 z-50 border-b border-gray-800">
             <div class="flex items-center gap-4">
-                <img src="https://img2.pic.in.th/1000074512.png" alt="Logo" class="h-12 w-auto grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all">
-                <div>
-                    <span class="block text-white font-bold font-montserrat">VIBE 24</span>
-                    <span class="text-xs text-gray-500">© 2026 All rights reserved.</span>
+                <img src="https://img2.pic.in.th/1000074512.png" alt="VIBE 24 Logo" class="h-12 md:h-16 object-contain drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]">
+                <div class="hidden md:block">
+                    <h1 class="text-2xl font-bold tracking-tighter leading-none">VIBE <span class="text-vibe-red">24</span></h1>
+                    <p class="text-xs text-gray-400 tracking-wide">คลื่นเพลงฮิต...ต่อเนื่อง 24 ชั่วโมง</p>
                 </div>
             </div>
             
-            <div class="flex gap-6">
-                <a href="#" class="text-gray-500 hover:text-vibeRed transition-colors"><i class="fab fa-facebook-f text-xl"></i></a>
-                <a href="#" class="text-gray-500 hover:text-vibeRed transition-colors"><i class="fab fa-instagram text-xl"></i></a>
-                <a href="#" class="text-gray-500 hover:text-vibeRed transition-colors"><i class="fab fa-tiktok text-xl"></i></a>
-                <a href="#" class="text-gray-500 hover:text-vibeRed transition-colors"><i class="fab fa-youtube text-xl"></i></a>
+            <div class="flex items-center gap-4">
+                <div class="hidden md:flex items-center gap-2 px-3 py-1 rounded-full bg-red-900/20 border border-red-900/50">
+                    <div class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                    <span class="text-xs font-semibold text-red-400">LIVE</span>
+                </div>
+                <button onclick="toggleVolume()" class="text-gray-300 hover:text-white transition p-2">
+                    <i id="vol-icon" class="fas fa-volume-up text-xl"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Player Section -->
+        <main class="flex-grow flex flex-col items-center justify-center p-4 md:p-8 w-full max-w-6xl mx-auto">
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full items-center">
+                
+                <!-- Left: Artwork & Visualizer -->
+                <div class="flex flex-col items-center justify-center relative group">
+                    <!-- Artwork Container -->
+                    <div class="relative w-64 h-64 md:w-96 md:h-96 rounded-full border-4 border-gray-800 p-2 shadow-2xl bg-black/50 overflow-hidden">
+                        <img id="track-artwork" src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&auto=format&fit=crop" 
+                             class="w-full h-full object-cover rounded-full cd-spin cd-paused shadow-[0_0_30px_rgba(227,30,36,0.3)] transition-transform duration-700" 
+                             alt="Album Art"
+                             onerror="this.src='https://img2.pic.in.th/1000074512.png'">
+                        
+                        <!-- Center Hole for CD effect -->
+                        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-black rounded-full border-2 border-gray-700 z-10"></div>
+                    </div>
+
+                    <!-- Equalizer (Hidden when paused) -->
+                    <div id="visualizer" class="flex items-end justify-center h-12 gap-1 mt-8 opacity-0 transition-opacity duration-300">
+                        <div class="equalizer-bar" style="animation-duration: 0.8s; height: 40%"></div>
+                        <div class="equalizer-bar" style="animation-duration: 1.2s; height: 70%"></div>
+                        <div class="equalizer-bar" style="animation-duration: 0.5s; height: 30%"></div>
+                        <div class="equalizer-bar" style="animation-duration: 0.9s; height: 80%"></div>
+                        <div class="equalizer-bar" style="animation-duration: 1.1s; height: 50%"></div>
+                        <div class="equalizer-bar" style="animation-duration: 0.7s; height: 90%"></div>
+                        <div class="equalizer-bar" style="animation-duration: 1.0s; height: 60%"></div>
+                        <div class="equalizer-bar" style="animation-duration: 0.6s; height: 40%"></div>
+                    </div>
+                </div>
+
+                <!-- Right: Controls & Info -->
+                <div class="flex flex-col space-y-6 text-center lg:text-left glass-panel p-8 rounded-2xl relative overflow-hidden">
+                    <!-- Decorative background element -->
+                    <div class="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-vibe-red blur-[100px] opacity-20 pointer-events-none"></div>
+
+                    <div class="space-y-1">
+                        <span class="inline-block px-3 py-1 rounded bg-gray-800 text-gray-400 text-xs font-bold tracking-widest uppercase mb-2">Now Playing</span>
+                        <h2 id="track-title" class="text-3xl md:text-5xl font-bold leading-tight text-white drop-shadow-lg break-words">
+                            Loading...
+                        </h2>
+                        <p id="artist-name" class="text-xl text-vibe-red font-medium">Please wait</p>
+                    </div>
+
+                    <!-- Controls -->
+                    <div class="flex flex-col items-center lg:items-start gap-6 pt-4">
+                        <div class="flex items-center gap-6">
+                            <button id="play-btn" onclick="togglePlay()" class="w-20 h-20 md:w-24 md:h-24 rounded-full bg-white text-vibe-red hover:bg-vibe-red hover:text-white transition-all duration-300 flex items-center justify-center shadow-lg hover:shadow-[0_0_30px_rgba(227,30,36,0.6)] focus:outline-none">
+                                <i id="play-icon" class="fas fa-play text-3xl md:text-4xl ml-2"></i>
+                            </button>
+                            
+                            <!-- Volume Slider (Desktop) -->
+                            <div class="hidden md:flex items-center gap-3 bg-black/40 rounded-full px-4 py-2 border border-gray-700">
+                                <i class="fas fa-volume-down text-gray-400 text-xs"></i>
+                                <input type="range" id="volume-slider" min="0" max="1" step="0.1" value="1" class="w-24 h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer accent-red-600">
+                                <i class="fas fa-volume-up text-gray-400 text-xs"></i>
+                            </div>
+                        </div>
+                        
+                        <p class="text-sm text-gray-400 max-w-md">
+                            กดปุ่ม Play เพื่อเริ่มฟังเพลงฮิตต่อเนื่อง 24 ชั่วโมง ความคมชัดระดับ HD
+                        </p>
+                    </div>
+
+                    <div class="h-px w-full bg-gray-700/50 my-4"></div>
+
+                    <!-- Next Track & Request -->
+                    <div class="flex flex-col md:flex-row justify-between items-center gap-4 w-full">
+                        <div class="text-center lg:text-left">
+                            <p class="text-xs text-gray-500 uppercase font-bold mb-1">Coming Up Next</p>
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-forward text-gray-600 text-sm"></i>
+                                <span id="next-track" class="text-gray-300 text-sm truncate max-w-[200px]">Loading...</span>
+                            </div>
+                        </div>
+                        
+                        <button onclick="openRequestModal()" class="group relative px-6 py-3 bg-transparent border border-gray-600 hover:border-vibe-red text-white rounded-lg transition-all duration-300 overflow-hidden">
+                            <div class="absolute inset-0 w-0 bg-vibe-red transition-all duration-[250ms] ease-out group-hover:w-full opacity-10"></div>
+                            <span class="relative flex items-center gap-2 font-medium">
+                                <i class="fas fa-music text-vibe-red"></i> ขอเพลง
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="w-full p-6 text-center text-gray-600 text-sm glass-panel border-t border-gray-800">
+            <p>&copy; 2024 VIBE 24 Radio. All rights reserved.</p>
+            <div class="flex justify-center gap-4 mt-2">
+                <a href="#" class="hover:text-vibe-red transition"><i class="fab fa-facebook"></i></a>
+                <a href="#" class="hover:text-vibe-red transition"><i class="fab fa-instagram"></i></a>
+                <a href="#" class="hover:text-vibe-red transition"><i class="fab fa-twitter"></i></a>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- Hidden Audio Element -->
+    <audio id="radio-player" preload="none">
+        <source src="https://streaming.radio.co/sbf4f79825/listen" type="audio/mpeg">
+        Browser ของคุณไม่รองรับการเล่นเสียง
+    </audio>
+
+    <!-- Request Modal -->
+    <div id="request-modal" class="fixed inset-0 z-[60] hidden">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-black/90 backdrop-blur-sm" onclick="closeRequestModal()"></div>
+        
+        <!-- Modal Content -->
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl h-[600px] bg-[#1a1a1a] border border-gray-700 rounded-xl shadow-2xl flex flex-col overflow-hidden">
+            <div class="flex justify-between items-center p-4 border-b border-gray-800 bg-black">
+                <h3 class="text-xl font-bold text-white"><i class="fas fa-music text-vibe-red mr-2"></i> ขอเพลงฮิต (Request)</h3>
+                <button onclick="closeRequestModal()" class="text-gray-400 hover:text-white transition">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="flex-grow bg-black relative">
+                <!-- iframe embedding the Request URL based on the script logic -->
+                <iframe src="https://embed.radio.co/request/w75f0bc0" class="w-full h-full border-0" title="Request Track"></iframe>
             </div>
         </div>
-    </footer>
+    </div>
 
-    <!-- Player Logic -->
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const player = document.getElementById('radio-player');
-            const playBtn = document.getElementById('play-btn');
-            const playIcon = document.getElementById('play-icon');
-            const pauseIcon = document.getElementById('pause-icon');
-            const volumeSlider = document.getElementById('volume-slider');
-            const visualizer = document.getElementById('visualizer');
-            const statusText = document.getElementById('status-text');
+        // --- Configuration ---
+        const STATION_ID = "sbf4f79825";
+        const API_URL = `https://public.radio.co/stations/${STATION_ID}/status`;
+        
+        // --- Elements ---
+        const player = document.getElementById('radio-player');
+        const playBtn = document.getElementById('play-btn');
+        const playIcon = document.getElementById('play-icon');
+        const artworkImg = document.getElementById('track-artwork');
+        const titleEl = document.getElementById('track-title');
+        const artistEl = document.getElementById('artist-name');
+        const nextTrackEl = document.getElementById('next-track');
+        const visualizer = document.getElementById('visualizer');
+        const volumeSlider = document.getElementById('volume-slider');
+        const volIcon = document.getElementById('vol-icon');
 
-            let isPlaying = false;
+        let isPlaying = false;
 
-            // Initialize volume
-            player.volume = volumeSlider.value;
+        // --- Core Functions ---
 
-            playBtn.addEventListener('click', togglePlay);
-
-            function togglePlay() {
-                if (player.paused) {
-                    // Play
-                    // Reload source to ensure live stream is current (buffer flush)
-                    const currentSrc = player.querySelector('source').src;
-                    // Only reset src if it was stopped for a long time, but for simple toggle standard play is fine
-                    // For live radio, sometimes it's better to just .play()
-                    
-                    const playPromise = player.play();
-                    
-                    if (playPromise !== undefined) {
-                        playPromise.then(_ => {
-                            updateUIState(true);
-                        })
-                        .catch(error => {
-                            console.error("Playback failed:", error);
-                            statusText.textContent = "Error loading stream";
-                        });
-                    }
-                } else {
-                    // Pause
-                    player.pause();
-                    updateUIState(false);
+        function togglePlay() {
+            if (player.paused) {
+                // Play
+                const playPromise = player.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(_ => {
+                        updatePlayState(true);
+                    })
+                    .catch(error => {
+                        console.error("Auto-play prevented or stream error:", error);
+                        alert("กรุณากดเล่นอีกครั้ง (Browser prevented autoplay)");
+                    });
                 }
+            } else {
+                // Pause
+                player.pause();
+                updatePlayState(false);
             }
+        }
 
-            function updateUIState(playing) {
-                if (playing) {
-                    playIcon.classList.add('hidden');
-                    pauseIcon.classList.remove('hidden');
-                    visualizer.classList.remove('paused');
-                    visualizer.classList.add('playing');
-                    statusText.textContent = "Now Streaming";
-                    statusText.classList.add('text-vibeRed');
-                } else {
-                    playIcon.classList.remove('hidden');
-                    pauseIcon.classList.add('hidden');
-                    visualizer.classList.remove('playing');
-                    visualizer.classList.add('paused');
-                    statusText.textContent = "Paused";
-                    statusText.classList.remove('text-vibeRed');
-                }
+        function updatePlayState(playing) {
+            isPlaying = playing;
+            if (playing) {
+                playIcon.classList.remove('fa-play');
+                playIcon.classList.remove('ml-2'); // Remove play adjustment
+                playIcon.classList.add('fa-pause');
+                
+                playBtn.classList.add('pulse-btn');
+                artworkImg.classList.remove('cd-paused');
+                visualizer.classList.remove('opacity-0');
+            } else {
+                playIcon.classList.remove('fa-pause');
+                playIcon.classList.add('fa-play');
+                playIcon.classList.add('ml-2'); // Add adjustment for play icon center
+                
+                playBtn.classList.remove('pulse-btn');
+                artworkImg.classList.add('cd-paused');
+                visualizer.classList.add('opacity-0');
             }
+        }
 
-            volumeSlider.addEventListener('input', (e) => {
-                player.volume = e.target.value;
-            });
+        function toggleVolume() {
+            player.muted = !player.muted;
+            if(player.muted) {
+                volIcon.classList.remove('fa-volume-up');
+                volIcon.classList.add('fa-volume-mute');
+                volIcon.classList.add('text-red-500');
+            } else {
+                volIcon.classList.remove('fa-volume-mute');
+                volIcon.classList.add('fa-volume-up');
+                volIcon.classList.remove('text-red-500');
+            }
+        }
 
-            // Handle potential stream dropouts
-            player.addEventListener('error', (e) => {
-                console.log("Stream error", e);
-                statusText.textContent = "Stream Offline";
-                updateUIState(false);
-            });
-            
-            // Check if radio.co scripts injected any styling that breaks layout and fix it
-            // (Observer pattern could be used here but CSS overrides are usually enough)
+        // Volume Slider Logic
+        volumeSlider.addEventListener('input', (e) => {
+            player.volume = e.target.value;
+            player.muted = false;
         });
+
+        // --- Fetch Metadata (The Modern Way) ---
+        // Instead of using document.write scripts, we fetch JSON
+        async function fetchRadioData() {
+            try {
+                const response = await fetch(API_URL);
+                const data = await response.json();
+                
+                // Update UI
+                const currentTrack = data.current_track;
+                const nextTrack = data.next_track;
+                const history = data.history;
+
+                // Split Title - Artist (Usually format is "Artist - Title" or "Title")
+                let songTitle = currentTrack.title;
+                let artistName = "VIBE 24";
+
+                if (songTitle.includes(" - ")) {
+                    const parts = songTitle.split(" - ");
+                    artistName = parts[0];
+                    songTitle = parts.slice(1).join(" - ");
+                }
+
+                // Update Text with simple animation if changed
+                if(titleEl.innerText !== songTitle) {
+                    titleEl.innerText = songTitle;
+                    artistEl.innerText = artistName;
+                }
+                
+                // Update Artwork
+                if (currentTrack.artwork_url && currentTrack.artwork_url !== artworkImg.src) {
+                     // Check if it's the generic radio.co logo, maybe use our logo instead
+                    if(currentTrack.artwork_url.includes("cdn.radio.co") && !currentTrack.artwork_url.includes("artworks")) {
+                         // Keep default or set to station logo
+                    } else {
+                        artworkImg.src = currentTrack.artwork_url;
+                    }
+                }
+
+                // Update Next Track
+                nextTrackEl.innerText = nextTrack.title || "Coming up soon...";
+                
+                // Update document title
+                document.title = `▶ ${songTitle} | VIBE 24`;
+
+            } catch (error) {
+                console.error("Error fetching radio data:", error);
+                // Fail silently, keep old data
+            }
+        }
+
+        // --- Modal Logic ---
+        window.openRequestModal = function() {
+            document.getElementById('request-modal').classList.remove('hidden');
+        }
+
+        window.closeRequestModal = function() {
+            document.getElementById('request-modal').classList.add('hidden');
+        }
+
+        // --- Initialization ---
+        // Fetch initially
+        fetchRadioData();
+        // Fetch every 10 seconds
+        setInterval(fetchRadioData, 10000);
+
     </script>
 </body>
 </html>
